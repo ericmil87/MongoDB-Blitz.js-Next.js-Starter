@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
@@ -13,20 +13,19 @@ generator client {
 // --------------------------------------
 
 model User {
-  id             Int      @id @default(autoincrement())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   name           String?
-  email          String   @unique
+  email          String    @unique
   hashedPassword String?
-  role           String   @default("USER")
-
-  tokens   Token[]
-  sessions Session[]
+  role           String    @default("USER")
+  tokens         Token[]
+  sessions       Session[]
 }
 
 model Session {
-  id                 Int       @id @default(autoincrement())
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   expiresAt          DateTime?
@@ -35,13 +34,13 @@ model Session {
   antiCSRFToken      String?
   publicData         String?
   privateData        String?
+  user               User?     @relation(fields: [userId], references: [id])
+  userId             String?
 
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?
 }
 
 model Token {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   hashedToken String
@@ -50,9 +49,9 @@ model Token {
   // type        TokenType
   expiresAt   DateTime
   sentTo      String
-
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  //@@index([userId])
 
   @@unique([hashedToken, type])
 }

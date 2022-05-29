@@ -1,7 +1,7 @@
 import { render } from "test/utils"
-
 import Home from "./index"
 import { useCurrentUser } from "app/core/hooks/useCurrentUser"
+import { ObjectId } from "bson"
 
 jest.mock("app/core/hooks/useCurrentUser")
 const mockUseCurrentUser = useCurrentUser as jest.MockedFunction<typeof useCurrentUser>
@@ -13,7 +13,7 @@ test.skip("renders blitz documentation link", () => {
 
   // This is an example on how to mock api hooks when testing
   mockUseCurrentUser.mockReturnValue({
-    id: 1,
+    id: new ObjectId().toString(),
     name: "User",
     email: "user@email.com",
     role: "user",
